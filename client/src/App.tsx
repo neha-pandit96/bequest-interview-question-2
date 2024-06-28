@@ -1,20 +1,23 @@
 import React, { useEffect, useState } from "react";
+import "./styles.css";
 
 const API_URL = "http://localhost:8080";
 
 function App() {
-  const [data, setData] = useState<string>();
+  const [data, setData] = useState<string>("");
 
   useEffect(() => {
     getData();
   }, []);
 
+  // API call to GET data
   const getData = async () => {
     const response = await fetch(API_URL);
     const { data } = await response.json();
     setData(data);
   };
 
+  // API call to Update Data
   const updateData = async () => {
     await fetch(API_URL, {
       method: "POST",
@@ -24,42 +27,42 @@ function App() {
         "Content-Type": "application/json",
       },
     });
-
     await getData();
   };
 
+  // API call to verify Data
   const verifyData = async () => {
-    throw new Error("Not implemented");
+    const response = await fetch(`${API_URL}/verify`, {
+      method: "POST",
+      body: JSON.stringify({ data }),
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+    const result = await response.json();
+    // Show alert if data is tampered or not
+    if (result.valid) {
+      alert("Data is valid and untampered.");
+    } else {
+      alert("Data has been tampered with.");
+    }
   };
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        position: "absolute",
-        padding: 0,
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-        gap: "20px",
-        fontSize: "30px",
-      }}
-    >
-      <div>Saved Data</div>
+    <div className="container">
+      <div className="saved-data">Saved Data: {data}</div>
       <input
-        style={{ fontSize: "30px" }}
+        className="input-box"
         type="text"
-        value={data}
+        // value={data}
         onChange={(e) => setData(e.target.value)}
       />
-
-      <div style={{ display: "flex", gap: "10px" }}>
-        <button style={{ fontSize: "20px" }} onClick={updateData}>
+      <div className="button-container">
+        <button className="button" onClick={updateData}>
           Update Data
         </button>
-        <button style={{ fontSize: "20px" }} onClick={verifyData}>
+        <button className="button" onClick={verifyData}>
           Verify Data
         </button>
       </div>
